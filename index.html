@@ -9,32 +9,33 @@
 </head>
 <body>
     <h1>Weather App</h1>
-    <div class="input-container">
-        <label for="city">Enter a city</label>
-        <input type="text" id="city">
-        <button id="submit-button">Search</button>
-    </div>
+    <div class="card">
+        <div class="input-container">
+            <input type="text" id="city" placeholder="Enter a city..">
+            <button class="submit-button">Search</button>
+        </div>
 
-    <div class="weather-cards-container">
-        <div class="weather-card">
-            <h1 class="temp">22F</h1>
-            <h2 class="city">New York</h2>
-            <div class="details">
-                <div class="col">
-                    <div>
-                        <p class="humidity">50%</p>
-                        <p>Humidity</p>
-                    </div>
-                </div>
-                <div class="col">
-                    <div>
-                        <p class="wind">3 mi/hour</p>
-                        <p>Wind Speed</p>
-                    </div>
-                </div>
+        <div class="main-row">
+            <div class="city-block">
+                <h2 class="city-name">Arrecife</h2>
+                <div class="condition">Clouds &nbsp;·&nbsp; Max: 25° &nbsp; Min: 25°</div>
+                <div class="temp-display">25°F</span></div>
+            </div>
+    
+            <div class="weather-icon">
+                <!-- <img src="partly-cloudy.png" alt="Partly Cloudy"> -->
+                icon here
+            </div>
+    
+            <div class="details-block">
+                <p>Friday 12:11</p>
+                <p>Humidity: 73%</p>
+                <p>Wind: 32 Km/H</p>
             </div>
         </div>
+
     </div>
+
 
 
 </body>

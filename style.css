@@ -38,23 +38,31 @@ h1 {
     margin-bottom: 1.5rem;
 }
 
-.input-container {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 1rem;
-    max-width: 900px;
-    margin: 0 auto;
-    font-size: 1.2rem;
+.card {
+  width: 820px;
+  border-radius: 24px;
+  background: linear-gradient(135deg, #8fb8d4 0%, #a8c4d8 25%, #c4b896 65%, #d4a855 100%);
+  padding: 28px 32px 32px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.15);
 }
 
-.weather-card {
-  max-width: 470px;
-  border: 1px solid #000;
-  margin: 25px auto;
-  border-radius: 20px;
-  padding: 40px 35px;
-  text-align: center;
+.input-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 28px;
 }
+
+.main-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 32px;
+}
+
 
 .details {
   display: flex;
@@ -62,10 +70,4 @@ h1 {
   justify-content: space-between;
   padding: 0 20px;
   margin-top: 50px;
-}
-
-.col {
-  display: flex;
-  align-items: center;
-  text-align: left;
 }
