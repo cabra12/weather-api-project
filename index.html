@@ -9,12 +9,33 @@
 </head>
 <body>
     <h1>Weather App</h1>
-    <div class="input-box">
+    <div class="input-container">
         <label for="city">Enter a city</label>
         <input type="text" id="city">
-        <button id="submit-button">Submit</button>
+        <button id="submit-button">Search</button>
     </div>
-    <div id="results"></div>
+
+    <div class="weather-cards-container">
+        <div class="weather-card">
+            <h1 class="temp">22F</h1>
+            <h2 class="city">New York</h2>
+            <div class="details">
+                <div class="col">
+                    <div>
+                        <p class="humidity">50%</p>
+                        <p>Humidity</p>
+                    </div>
+                </div>
+                <div class="col">
+                    <div>
+                        <p class="wind">3 mi/hour</p>
+                        <p>Wind Speed</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
 
 </body>
 </html>
