@@ -22,7 +22,6 @@ html, body {
 
 img {
   display: block;
-  max-width: 100%;
 }
 
 input, button, select, textarea {
@@ -93,27 +92,49 @@ h1 {
   transition: background 0.2s;
 }
  
-#submit-button:hover { background: rgba(80,130,185,0.85); }
+#submit-button:hover { 
+  background: rgba(80,130,185,0.85); 
+}
 
-.main-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-around;
-  margin-bottom: 32px;
+.top-row {
+  margin: 0 auto;
+  padding: 0 1rem;
 }
 
 .city-name {
   font-size: 2.2rem;
   font-family: 'Lora', sans-serif;
+  margin-bottom: 0.8rem;
 }
 
-
-.details {
-  display: flex;
+.main-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   align-items: center;
-  justify-content: space-between;
-  padding: 0 20px;
-  margin-top: 50px;
+  justify-items: center;
+  margin-bottom: 32px;
+}
+
+.weather-icon-row {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.weather-icon-row img {
+  height: 150px;
+  width: 150px;
+}
+
+.temp-items {
+  display: grid;
+  grid-template-columns: 1fr;
+}
+
+.temp-display {
+  font-family: 'Lora', sans-serif;
+  font-weight: 200;
+  font-size: 4.3rem;
 }
 
 .forecast-row {

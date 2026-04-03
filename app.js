@@ -77,7 +77,7 @@ const getDailyForecast = (forecast) => {
 };
 
 const forecastHTML = (forecast) => {
-    return Object.values(forecast).map(day =>
+    return Object.values(forecast).slice(1).map(day =>
         `<div class="forecast-day">
             <span class="day-label">${day.day}</span>
             <div class="forecast-icon"><!-- img --></div>
@@ -94,20 +94,21 @@ const createCard = (current, forecast, region) => {
     const div = document.createElement('div');
     div.classList.add('weather-input-container');
     div.innerHTML = `
-                <div class="main-row">
-                    <div class="city-block">
-                        <h2 class="city-name">${current.name}, ${region}</h2>
-                        <div class="condition">${current.weather[0].main} Min: ${Math.round(current.main.temp_min)}°F &nbsp; Max: ${Math.round(current.main.temp_max)}°F </div>
-                        <div class="temp-display">${Math.round(current.main.temp)}°F</span></div>
-                    </div>
-            
-                    <div class="weather-icon">
-                    </div>
-            
-                    <div class="details-block">
-                        <p>Feels Like: ${Math.round(current.main.feels_like)}°F</p>
-                        <p>Humidity: ${current.main.humidity}%</p>
-                        <p>Wind: ${current.wind.speed} mi/h</p>
+                <div class="top-row">
+                    <h2 class="city-name">${current.name}, ${region}</h2>
+                    <div class="main-row">
+                        <div class="weather-icon-row">
+                            <img src="weather-icons/clear-svg.svg">
+                            <div class="condition">${current.weather[0].main}</div>
+                        </div>
+                        <div class="temp-items">
+                            <div class="temp-display">${Math.round(current.main.temp)}°F</span></div>
+                            <div>
+                                <p>🌡️ Feels Like: ${Math.round(current.main.feels_like)}°F</p>
+                                <div>🔻 Min: ${Math.round(current.main.temp_min)}°F | 🔺 Max: ${Math.round(current.main.temp_max)}°F</div> 
+                                <p>💧 Humidity: ${current.main.humidity}% &middot | 💨 Wind: ${current.wind.speed} mi/h</p>                             
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="forecast-row"> ${forecastHTML(forecast)}</div> 
