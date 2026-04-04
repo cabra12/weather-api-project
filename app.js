@@ -41,7 +41,6 @@ const fetchAPIData = async (query) => {
     const forecast = await forecastRes.json();
 
     const forecastArray = getDailyForecast(forecast);
-    console.log(current);
     createCard(current, forecastArray, region);
 };
 
@@ -112,12 +111,12 @@ const createCard = (current, forecast, region) => {
                     <h2 class="city-name">${current.name}, ${region}</h2>
                     <div class="main-row">
                         <div class="weather-icon-row">
-                            <img class="icon-element" alt="weather icon">
+                            <img src="icons/${current.weather[0].icon}.svg" alt="weather icon">
                             <div class="condition">${current.weather[0].main}</div>
                         </div>
                         <div class="temp-items">
                             <div class="temp-display">${Math.round(current.main.temp)}°F</span></div>
-                            <div>
+                            <div class="weather-data-column">
                                 <p>🌡️ Feels Like: ${Math.round(current.main.feels_like)}°F</p>
                                 <div>🔻 Min: ${Math.round(current.main.temp_min)}°F | 🔺 Max: ${Math.round(current.main.temp_max)}°F</div> 
                                 <p>💧 Humidity: ${current.main.humidity}% &middot | 💨 Wind: ${current.wind.speed} mi/h</p>                             
@@ -127,9 +126,6 @@ const createCard = (current, forecast, region) => {
                 </div>
                 <div class="forecast-row"> ${forecastHTML(forecast)}</div> 
     `;
-
-    const weatherIconCode = current.weather[0].icon;
-    div.querySelector('.icon-element').setAttribute("src", `icons/${weatherIconCode}.svg`);
     
 
     //doing the night theme
