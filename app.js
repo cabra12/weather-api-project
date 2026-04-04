@@ -4,14 +4,15 @@
 const submitButton = document.getElementById('submit-button');
 const rawInput = document.getElementById('city');
 
+
 const getLocation = () => {
+    //this was done to make it more relevant outside of the US
     const US_STATES = ['AL','AK','AZ','AR','CA','CO','CT','DE','FL','GA','HI','ID','IL','IN','IA','KS','KY','LA','ME','MD','MA','MI','MN','MS','MO','MT','NE','NV','NH','NJ','NM','NY','NC','ND','OH','OK','OR','PA','RI','SC','SD','TN','TX','UT','VT','VA','WA','WV','WI','WY'];
     const parts = rawInput.value.split(",").map(str => str.trim());
     const lastPart = parts[parts.length - 1].toUpperCase();
     const isUSState = US_STATES.includes(lastPart);
     const isCountryCode = parts.length === 3 || (!isUSState && parts.length === 2);
     const query = isCountryCode ? parts.join(",") : `${parts.join(",")},US`;
-    console.log(query);
     
     if(document.querySelector('.weather-input-container')) {
         document.querySelector('.weather-input-container').remove();
@@ -40,7 +41,7 @@ const fetchAPIData = async (query) => {
     const forecast = await forecastRes.json();
 
     const forecastArray = getDailyForecast(forecast);
-
+    console.log(current);
     createCard(current, forecastArray, region);
 };
 
@@ -62,11 +63,14 @@ const getDailyForecast = (forecast) => {
                 temps_max: [],
                 temps_min: [],
                 weather: entry.weather[0].main,
+                iconID: entry.weather[0].icon,
             }
         }
 
+        //Mid-day weather at this time might be most reprentative for the weather of the day
         if(entry.dt_txt.includes('12:00:00')) {
             days[date].weather = entry.weather[0].main;
+            days[date].iconID = entry.weather[0].icon;
         }
 
         days[date].temps_max.push(entry.main.temp_max);
@@ -77,14 +81,24 @@ const getDailyForecast = (forecast) => {
 };
 
 const forecastHTML = (forecast) => {
-    return Object.values(forecast).slice(1).map(day =>
+    const firstKey = Object.keys(forecast)[0];
+    const firstDay = forecast[firstKey].day;
+    const currentDay = getDay(new Date().toLocaleDateString("en-CA"));
+    let currentObjForecast;
+
+    currentObjForecast = (firstDay === currentDay ? Object.values(forecast).slice(1) : Object.values(forecast)).slice(0, 5);
+
+    //this was done because the forecast was going from a 5 day forecast to a 4 day or 6 day forecast without this, depending on the time of day
+
+
+    return currentObjForecast.map(day =>
         `<div class="forecast-day">
             <span class="day-label">${day.day}</span>
-            <div class="forecast-icon"><!-- img --></div>
+            <img src="icons/${day.iconID}.svg" alt="forecast weather icon">
             <div class="forecast-temps">
-                <span class="lo">${Math.round(Math.min(...day.temps_min))}&deg;</span>
-                <span class="hi">${Math.round(Math.max(...day.temps_max))}&deg;</span> 
+                <span>L: ${Math.round(Math.min(...day.temps_min))}&deg; &nbsp;&nbsp; H: ${Math.round(Math.max(...day.temps_max))}&deg;</span>
             </div>
+            <div>${day.weather}</div>
         </div>`
     ).join("");
 };
@@ -98,7 +112,7 @@ const createCard = (current, forecast, region) => {
                     <h2 class="city-name">${current.name}, ${region}</h2>
                     <div class="main-row">
                         <div class="weather-icon-row">
-                            <img src="weather-icons/clear-svg.svg">
+                            <img class="icon-element" alt="weather icon">
                             <div class="condition">${current.weather[0].main}</div>
                         </div>
                         <div class="temp-items">
@@ -114,6 +128,25 @@ const createCard = (current, forecast, region) => {
                 <div class="forecast-row"> ${forecastHTML(forecast)}</div> 
     `;
 
+    const weatherIconCode = current.weather[0].icon;
+    div.querySelector('.icon-element').setAttribute("src", `icons/${weatherIconCode}.svg`);
+    
+
+    //doing the night theme
+    const card = document.querySelector('.card');
+    const now = Date.now() / 1000;
+    const isNight = now < current.sys.sunrise || now > current.sys.sunset;
+    //takes the time and compares it to the sunset and sunrise of the location, always reflecting the region's day time and night time in the theme
+
+    if(isNight) {
+        card.style.background = 'linear-gradient(135deg, #2e4a7a 0%, #3b6494 25%, #4a3f80 65%, #2d2d6b 100%)';
+        submitButton.style.background = '#5b7ab8';
+        card.style.color = '#fff';
+    }else {
+        card.style.background = 'linear-gradient(135deg, #87ceeb 0%, #b0dff0 25%, #d4c47a 65%, #f0b429 100%)';
+        submitButton.style.background = '#5ba8d4';
+        card.style.color = '#000';
+    }
     document.querySelector('.card').appendChild(div);
 };
 
