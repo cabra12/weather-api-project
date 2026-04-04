@@ -2,26 +2,31 @@
 //https://openweathermap.org/forecast5?collection=current_forecast#5days
 
 const submitButton = document.getElementById('submit-button');
-const rawInput = document.getElementById('city');
+
+let rawInput;
+let lastQuery;
 
 
-const getLocation = () => {
+const getLocation = (rawInput) => {
     //this was done to make it more relevant outside of the US
     const US_STATES = ['AL','AK','AZ','AR','CA','CO','CT','DE','FL','GA','HI','ID','IL','IN','IA','KS','KY','LA','ME','MD','MA','MI','MN','MS','MO','MT','NE','NV','NH','NJ','NM','NY','NC','ND','OH','OK','OR','PA','RI','SC','SD','TN','TX','UT','VT','VA','WA','WV','WI','WY'];
-    const parts = rawInput.value.split(",").map(str => str.trim());
+    const parts = rawInput.split(",").map(str => str.trim());
     const lastPart = parts[parts.length - 1].toUpperCase();
     const isUSState = US_STATES.includes(lastPart);
     const isCountryCode = parts.length === 3 || (!isUSState && parts.length === 2);
-    const query = isCountryCode ? parts.join(",") : `${parts.join(",")},US`;
+    lastQuery = isCountryCode ? parts.join(",") : `${parts.join(",")},US`;
     
-    if(document.querySelector('.weather-input-container')) {
-        document.querySelector('.weather-input-container').remove();
-    }
-    fetchAPIData(query);
+
+    fetchAPIData(lastQuery);
     rawInput.value = '';
 };
 
-const fetchAPIData = async (query) => {
+const fetchAPIData = async (query, units = 'imperial') => {
+
+    if(document.querySelector('.weather-input-container')) {
+        document.querySelector('.weather-input-container').remove();
+    }
+
     const key = 'ea12bceac54c6a464611413684fbe029';
     const base_API_URL = 'https://api.openweathermap.org/data/2.5';
     const formattedQuery = encodeURIComponent(query);
@@ -33,15 +38,15 @@ const fetchAPIData = async (query) => {
     const region = locationData[0].state || locationData[0].country;
 
     const [currentRes, forecastRes] = await Promise.all([
-        fetch(`${base_API_URL}/weather?lat=${lat}&lon=${lon}&appid=${key}&units=imperial`),
-        fetch(`${base_API_URL}/forecast?lat=${lat}&lon=${lon}&cnt=40&appid=${key}&units=imperial`),
+        fetch(`${base_API_URL}/weather?lat=${lat}&lon=${lon}&appid=${key}&units=${units}`),
+        fetch(`${base_API_URL}/forecast?lat=${lat}&lon=${lon}&cnt=40&appid=${key}&units=${units}`),
     ]);
 
     const current = await currentRes.json();
     const forecast = await forecastRes.json();
 
     const forecastArray = getDailyForecast(forecast);
-    createCard(current, forecastArray, region);
+    createCard(current, forecastArray, region, units);
 };
 
 
@@ -89,7 +94,6 @@ const forecastHTML = (forecast) => {
 
     //this was done because the forecast was going from a 5 day forecast to a 4 day or 6 day forecast without this, depending on the time of day
 
-
     return currentObjForecast.map(day =>
         `<div class="forecast-day">
             <span class="day-label">${day.day}</span>
@@ -102,7 +106,35 @@ const forecastHTML = (forecast) => {
     ).join("");
 };
 
-const createCard = (current, forecast, region) => {
+const changingTheme = (sunrise, sunset) => {
+    //doing the night theme
+    const card = document.querySelector('.card');
+    const now = Date.now() / 1000;
+    const isNight = now < sunrise || now > sunset;
+    //takes the time and compares it to the sunset and sunrise of the location, always reflecting the region's day time and night time in the theme
+
+    if(isNight) {
+        card.style.background = 'linear-gradient(135deg, #2e4a7a 0%, #3b6494 25%, #4a3f80 65%, #2d2d6b 100%)';
+        submitButton.style.background = '#5b7ab8';
+        card.style.color = '#fff';
+    }else {
+        card.style.background = 'linear-gradient(135deg, #e8f4fd 0%, #87ceeb 30%, #3b8fd4 65%, #57aee8 100%)';
+        submitButton.style.background = '#2176ae';
+        card.style.color = '#000';
+    }
+};
+
+const boldTemp = (units) => {
+    if(units === 'metric') {
+        document.querySelector('.temp-bold-fah').style.fontWeight = '400';
+        document.querySelector('.temp-bold-cel').style.fontWeight = '600';
+    }else {
+        document.querySelector('.temp-bold-fah').style.fontWeight = '600';
+        document.querySelector('.temp-bold-cel').style.fontWeight = '400';
+    }
+}
+
+const createCard = (current, forecast, region, units) => {
 
     const div = document.createElement('div');
     div.classList.add('weather-input-container');
@@ -115,10 +147,13 @@ const createCard = (current, forecast, region) => {
                             <div class="condition">${current.weather[0].main}</div>
                         </div>
                         <div class="temp-items">
-                            <div class="temp-display">${Math.round(current.main.temp)}°F</span></div>
+                            <div class="temp-degree">
+                                <div class="temp-display">${Math.round(current.main.temp)}</div>
+                                <div><span class="temp-bold-fah">&deg;F</span> | <span class="temp-bold-cel">&deg;C</span> </div>
+                            </div>
                             <div class="weather-data-column">
-                                <p>🌡️ Feels Like: ${Math.round(current.main.feels_like)}°F</p>
-                                <div>🔻 Min: ${Math.round(current.main.temp_min)}°F | 🔺 Max: ${Math.round(current.main.temp_max)}°F</div> 
+                                <p>🌡️ Feels Like: ${Math.round(current.main.feels_like)}&deg;</p>
+                                <div>🔻 Min: ${Math.round(current.main.temp_min)}&deg; | 🔺 Max: ${Math.round(current.main.temp_max)}&deg;</div> 
                                 <p>💧 Humidity: ${current.main.humidity}% &middot | 💨 Wind: ${current.wind.speed} mi/h</p>                             
                             </div>
                         </div>
@@ -127,27 +162,19 @@ const createCard = (current, forecast, region) => {
                 <div class="forecast-row"> ${forecastHTML(forecast)}</div> 
     `;
     
-
-    //doing the night theme
-    const card = document.querySelector('.card');
-    const now = Date.now() / 1000;
-    const isNight = now < current.sys.sunrise || now > current.sys.sunset;
-    //takes the time and compares it to the sunset and sunrise of the location, always reflecting the region's day time and night time in the theme
-
-    if(isNight) {
-        card.style.background = 'linear-gradient(135deg, #2e4a7a 0%, #3b6494 25%, #4a3f80 65%, #2d2d6b 100%)';
-        submitButton.style.background = '#5b7ab8';
-        card.style.color = '#fff';
-    }else {
-        card.style.background = 'linear-gradient(135deg, #87ceeb 0%, #b0dff0 25%, #d4c47a 65%, #f0b429 100%)';
-        submitButton.style.background = '#5ba8d4';
-        card.style.color = '#000';
-    }
     document.querySelector('.card').appendChild(div);
+    changingTheme(current.sys.sunrise, current.sys.sunset);
+    boldTemp(units);
+
+    
+    //Event Listeners
+    document.querySelector('.temp-bold-cel').addEventListener('click', () => fetchAPIData(lastQuery, 'metric'));
+    document.querySelector('.temp-bold-fah').addEventListener('click', () => fetchAPIData(lastQuery, 'imperial'));
 };
 
 
 //Event Listeners
-document.addEventListener('DOMContentLoaded', fetchAPIData('Los Angeles,CA,US'));
-submitButton.addEventListener('click', getLocation);
+document.addEventListener('DOMContentLoaded', getLocation(rawInput='Los Angeles,CA,US'));
+submitButton.addEventListener('click', () => getLocation(rawInput = document.getElementById('city').value));
+
 
