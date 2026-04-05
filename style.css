@@ -48,6 +48,7 @@ h1 {
 .card {
   width: 840px;
   max-width: 90%;
+  min-height: 570px;
   border-radius: 24px;
   background: linear-gradient(135deg, #e8f4fd 0%, #87ceeb 30%, #3b8fd4 65%, #57aee8 100%);
   padding: 2.5rem;
@@ -173,3 +174,74 @@ h1 {
   text-transform: uppercase;
   font-family: 'Lora', sans-serif;
 }
+
+/* loader from css-loaders.com */
+
+/* .loader {
+  height: 15px;
+  aspect-ratio: 4;
+  --_g: no-repeat radial-gradient(farthest-side,#000 90%,#0000);
+  background: 
+    var(--_g) left, 
+    var(--_g) right;
+  background-size: 25% 100%;
+  display: none;
+  margin: auto;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.show {
+  display: grid;
+}
+
+.loader:before,
+.loader:after {
+  content: "";
+  height: inherit;
+  aspect-ratio: 1;
+  grid-area: 1/1;
+  margin: auto;
+  border-radius: 50%;
+  transform-origin: -100% 50%;
+  background: #000;
+  animation: l49 1s infinite linear;
+}
+.loader:after {
+  transform-origin: 200% 50%;
+  --s:-1;
+  animation-delay: -.5s;
+}
+
+@keyframes l49 {
+  58%,
+  100% {transform: rotate(calc(var(--s,1)*1turn))}
+} */
+
+
+.loader {
+  width: 50px;
+  aspect-ratio: 1;
+  --_c:no-repeat radial-gradient(farthest-side,#000 92%,#0000);
+  background: 
+    var(--_c) top,
+    var(--_c) left,
+    var(--_c) right,
+    var(--_c) bottom;
+  background-size: 12px 12px;
+  animation: l7 1s infinite;
+  display: none;
+  margin: auto;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.show {
+  display: block;
+}
+
+@keyframes l7 {to{transform: rotate(.5turn)}}
