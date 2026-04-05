@@ -1,22 +1,50 @@
 const submitButton = document.getElementById('submit-button');
+const input = document.querySelector('#city');
+let debounceTimer;
 
 let rawInput;
 let lastQuery;
 //variable named this way when user toggles, the "last query" is used in the API
 
-const getLocation = (rawInput) => {
-    //this was done to make it more relevant outside of the US
-    const US_STATES = ['AL','AK','AZ','AR','CA','CO','CT','DE','FL','GA','HI','ID','IL','IN','IA','KS','KY','LA','ME','MD','MA','MI','MN','MS','MO','MT','NE','NV','NH','NJ','NM','NY','NC','ND','OH','OK','OR','PA','RI','SC','SD','TN','TX','UT','VT','VA','WA','WV','WI','WY'];
-    const parts = rawInput.split(",").map(str => str.trim());
-    const lastPart = parts[parts.length - 1].toUpperCase();
-    //gets country code or state code like this
-    const isUSState = US_STATES.includes(lastPart);
-    const isCountryCode = parts.length === 3 || (!isUSState && parts.length === 2);
-    lastQuery = isCountryCode ? parts.join(",") : `${parts.join(",")},US`;
-    //this helps the API find accurate results especially if the user is searching outside of the US
+// const getLocation = (rawInput) => {
+//     //this was done to make it more relevant outside of the US
+//     const US_STATES = ['AL','AK','AZ','AR','CA','CO','CT','DE','FL','GA','HI','ID','IL','IN','IA','KS','KY','LA','ME','MD','MA','MI','MN','MS','MO','MT','NE','NV','NH','NJ','NM','NY','NC','ND','OH','OK','OR','PA','RI','SC','SD','TN','TX','UT','VT','VA','WA','WV','WI','WY'];
+//     const parts = rawInput.split(",").map(str => str.trim());
+//     const lastPart = parts[parts.length - 1].toUpperCase();
+//     //gets country code or state code like this
+//     const isUSState = US_STATES.includes(lastPart);
+//     const isCountryCode = parts.length === 3 || (!isUSState && parts.length === 2);
+//     lastQuery = isCountryCode ? parts.join(",") : `${parts.join(",")},US`;
+//     //this helps the API find accurate results especially if the user is searching outside of the US
 
-    fetchAPIData(lastQuery);
-    rawInput.value = '';
+//     fetchAPIData(lastQuery);
+//     rawInput.value = '';
+// };
+
+const searchResult = () => {
+    const key = 'ea12bceac54c6a464611413684fbe029';
+
+    clearTimeout(debounceTimer);
+
+    debounceTimer = setTimeout(async () => {
+        const query = input.value;
+
+        if(query.length < 3) return;
+
+        const response = await fetch(`http://api.openweathermap.org/geo/1.0/direct?q=${query}&limit=5&appid=${key}`);
+        const cities = await response.json();
+        dropDownMenu(cities);
+    }, 300);
+};
+
+const dropDownMenu = (cities) => {
+    const dropdown = document.getElementById('dropdown');
+
+    dropdown.innerHTML = (cities.slice(0, 5).map((city) => 
+        `<div class="search-result">${city.name}, ${city.state}, ${city.country}</div>`
+    ).join(''));
+
+    dropdown.style.display = 'block';
 };
 
 const fetchAPIData = async (query, units = 'imperial') => {
@@ -86,7 +114,6 @@ const getDailyForecast = (forecast) => {
 };
 
 const forecastHTML = (forecast) => {
-    console.log(forecast);
     const firstKey = Object.keys(forecast)[0];
     const firstDay = forecast[firstKey].day;
     const currentDay = getDay(new Date().toLocaleDateString("en-CA"));
@@ -192,7 +219,8 @@ const hideLoader = () => {
 
 
 //Event Listeners
-document.addEventListener('DOMContentLoaded', getLocation(rawInput='Los Angeles,CA,US'));
+document.addEventListener('DOMContentLoaded', fetchAPIData('Los Angeles,CA,US'));
 submitButton.addEventListener('click', () => getLocation(rawInput = document.getElementById('city').value));
+input.addEventListener('input', searchResult);
 
 

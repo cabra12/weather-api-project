@@ -59,13 +59,17 @@ h1 {
 
 .input-container {
   display: flex;
-  flex-wrap: wrap;
   gap: 10px;
   margin-bottom: 28px;
 }
 
-.input-container input {
+.input-wrapper {
+  position: relative;
   flex: 1;
+}
+
+.input-wrapper input {
+  width: 100%;
   padding: 10px 18px;
   border-radius: 10px;
   border: none;
@@ -73,6 +77,29 @@ h1 {
   font-size: 14px;
   color: #444;
   outline: none;
+}
+
+#dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  display: none;
+  background: #fff;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+}
+
+.search-result {
+  padding: 10px 18px;
+  font-size: 14px;
+  color: #444;
+  cursor: pointer;
+}
+
+.search-result:hover {
+  background: #f0f0f0;
 }
 
 
@@ -176,50 +203,6 @@ h1 {
 }
 
 /* loader from css-loaders.com */
-
-/* .loader {
-  height: 15px;
-  aspect-ratio: 4;
-  --_g: no-repeat radial-gradient(farthest-side,#000 90%,#0000);
-  background: 
-    var(--_g) left, 
-    var(--_g) right;
-  background-size: 25% 100%;
-  display: none;
-  margin: auto;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-}
-
-.show {
-  display: grid;
-}
-
-.loader:before,
-.loader:after {
-  content: "";
-  height: inherit;
-  aspect-ratio: 1;
-  grid-area: 1/1;
-  margin: auto;
-  border-radius: 50%;
-  transform-origin: -100% 50%;
-  background: #000;
-  animation: l49 1s infinite linear;
-}
-.loader:after {
-  transform-origin: 200% 50%;
-  --s:-1;
-  animation-delay: -.5s;
-}
-
-@keyframes l49 {
-  58%,
-  100% {transform: rotate(calc(var(--s,1)*1turn))}
-} */
-
 
 .loader {
   width: 50px;
