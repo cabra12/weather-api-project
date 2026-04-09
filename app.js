@@ -17,7 +17,7 @@ const searchResult = () => {
 
         if(query.length < 3) return;
 
-        const response = await fetch(`http://api.openweathermap.org/geo/1.0/direct?q=${query}&limit=5&appid=${key}`);
+        const response = await fetch(`https://api.openweathermap.org/geo/1.0/direct?q=${query}&limit=5&appid=${key}`);
         const cities = await response.json();
         dropDownMenu(cities);
     }, 300);
@@ -56,7 +56,7 @@ const fetchAPIData = async (query, units = 'imperial') => {
     const formattedQuery = encodeURIComponent(query); //formats query if user put in spaces for two word city names (ex: Los Angeles)
 
     try {
-        const locationResponse = await fetch(`http://api.openweathermap.org/geo/1.0/direct?q=${formattedQuery}&limit=1&appid=${key}`);
+        const locationResponse = await fetch(`https://api.openweathermap.org/geo/1.0/direct?q=${formattedQuery}&limit=1&appid=${key}`);
         if(!locationResponse.ok) throw new Error(`There was an error retrieving the data: ${locationResponse.status}`);
 
         const locationData = await locationResponse.json();
