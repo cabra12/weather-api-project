@@ -1,25 +1,11 @@
 const submitButton = document.getElementById('submit-button');
 const input = document.querySelector('#city');
+const dropdown = document.getElementById('dropdown');
 let debounceTimer;
 
 let rawInput;
 let lastQuery;
 //variable named this way when user toggles, the "last query" is used in the API
-
-// const getLocation = (rawInput) => {
-//     //this was done to make it more relevant outside of the US
-//     const US_STATES = ['AL','AK','AZ','AR','CA','CO','CT','DE','FL','GA','HI','ID','IL','IN','IA','KS','KY','LA','ME','MD','MA','MI','MN','MS','MO','MT','NE','NV','NH','NJ','NM','NY','NC','ND','OH','OK','OR','PA','RI','SC','SD','TN','TX','UT','VT','VA','WA','WV','WI','WY'];
-//     const parts = rawInput.split(",").map(str => str.trim());
-//     const lastPart = parts[parts.length - 1].toUpperCase();
-//     //gets country code or state code like this
-//     const isUSState = US_STATES.includes(lastPart);
-//     const isCountryCode = parts.length === 3 || (!isUSState && parts.length === 2);
-//     lastQuery = isCountryCode ? parts.join(",") : `${parts.join(",")},US`;
-//     //this helps the API find accurate results especially if the user is searching outside of the US
-
-//     fetchAPIData(lastQuery);
-//     rawInput.value = '';
-// };
 
 const searchResult = () => {
     const key = 'ea12bceac54c6a464611413684fbe029';
@@ -38,8 +24,6 @@ const searchResult = () => {
 };
 
 const dropDownMenu = (cities) => {
-    const dropdown = document.getElementById('dropdown');
-
     dropdown.innerHTML = (cities.slice(0, 5).map((city) => 
         `<div class="search-result">${city.name}, ${city.state}, ${city.country}</div>`
     ).join(''));
@@ -47,7 +31,19 @@ const dropDownMenu = (cities) => {
     dropdown.style.display = 'block';
 };
 
+dropdown.addEventListener('click', (e) => {
+    const item = e.target.closest('.search-result');
+    if(!item) return;
+    const result = item.textContent;
+    
+    fetchAPIData(result);
+});
+
 const fetchAPIData = async (query, units = 'imperial') => {
+
+    lastQuery = query;
+    dropdown.innerHTML = '';
+    document.getElementById('city').value = '';
 
     if(document.querySelector('.weather-input-container')) {
         document.querySelector('.weather-input-container').remove();
@@ -204,7 +200,7 @@ const createCard = (current, forecast, region, units) => {
     boldTemp(units);
 
     
-    //Event Listeners
+    //Event Listeners for card creation
     document.querySelector('.temp-bold-cel').addEventListener('click', () => fetchAPIData(lastQuery, 'metric'));
     document.querySelector('.temp-bold-fah').addEventListener('click', () => fetchAPIData(lastQuery, 'imperial'));
 };
@@ -220,7 +216,7 @@ const hideLoader = () => {
 
 //Event Listeners
 document.addEventListener('DOMContentLoaded', fetchAPIData('Los Angeles,CA,US'));
-submitButton.addEventListener('click', () => getLocation(rawInput = document.getElementById('city').value));
+submitButton.addEventListener('click', () => fetchAPIData(document.getElementById('city').value));
 input.addEventListener('input', searchResult);
 
 
