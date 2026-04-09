@@ -200,12 +200,13 @@ const createCard = (current, forecast, region, units) => {
                             <div class="weather-data-column">
                                 <p>🌡️ Feels Like: ${Math.round(current.main.feels_like)}&deg;</p>
                                 <div>🔻 Min: ${Math.round(current.main.temp_min)}&deg; | 🔺 Max: ${Math.round(current.main.temp_max)}&deg;</div> 
-                                <p>💧 Humidity: ${current.main.humidity}% &middot | 💨 Wind: ${units === "imperial" ? `${current.wind.speed} mph` : `${current.wind.speed} m/s`}</p>                             
+                                <p>💧 Humidity: ${current.main.humidity}% | 💨 Wind: ${units === "imperial" ? `${current.wind.speed} mph` : `${current.wind.speed} m/s`}</p>                             
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="forecast-row"> ${forecastHTML(forecast)}</div> 
+                <div style="text-align: center; margin-top: 1rem;"><p>Data from OpenWeatherMap API</p></div>
     `;
     
     document.querySelector('.card').appendChild(div);
