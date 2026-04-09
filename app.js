@@ -55,23 +55,36 @@ const fetchAPIData = async (query, units = 'imperial') => {
     const base_API_URL = 'https://api.openweathermap.org/data/2.5';
     const formattedQuery = encodeURIComponent(query); //formats query if user put in spaces for two word city names (ex: Los Angeles)
 
-    const locationResponse = await fetch(`http://api.openweathermap.org/geo/1.0/direct?q=${formattedQuery}&limit=1&appid=${key}`);
-    const locationData = await locationResponse.json();
-    const lat = locationData[0].lat;
-    const lon = locationData[0].lon;
-    const region = locationData[0].state || locationData[0].country;
+    try {
+        const locationResponse = await fetch(`http://api.openweathermap.org/geo/1.0/direct?q=${formattedQuery}&limit=1&appid=${key}`);
+        if(!locationResponse.ok) throw new Error(`There was an error retrieving the data: ${locationResponse.status}`);
 
-    const [currentRes, forecastRes] = await Promise.all([
-        fetch(`${base_API_URL}/weather?lat=${lat}&lon=${lon}&appid=${key}&units=${units}`),
-        fetch(`${base_API_URL}/forecast?lat=${lat}&lon=${lon}&cnt=40&appid=${key}&units=${units}`),
-    ]);
+        const locationData = await locationResponse.json();
+        if(!locationData.length) throw new Error("Location not found");
+        const lat = locationData[0].lat;
+        const lon = locationData[0].lon;
+        const region = locationData[0].state || locationData[0].country;
 
-    const current = await currentRes.json();
-    const forecast = await forecastRes.json();
+        const [currentRes, forecastRes] = await Promise.all([
+            fetch(`${base_API_URL}/weather?lat=${lat}&lon=${lon}&appid=${key}&units=${units}`),
+            fetch(`${base_API_URL}/forecast?lat=${lat}&lon=${lon}&cnt=40&appid=${key}&units=${units}`),
+        ]);
 
-    const forecastArray = getDailyForecast(forecast);
-    hideLoader();
-    createCard(current, forecastArray, region, units);
+        if(!currentRes.ok) throw new Error(`Finding current weather failed: ${currentRes.status}`);
+        if(!forecastRes.ok) throw new Error(`Finding future forecast failed: ${forecastRes.status}`);
+
+        const current = await currentRes.json();
+        const forecast = await forecastRes.json();
+
+        const forecastArray = getDailyForecast(forecast);
+        createCard(current, forecastArray, region, units);
+    } catch (error) {
+        console.error('Failed: ', error.message);
+        showAlert(error.message);
+    } finally {
+        hideLoader();
+    }
+
 };
 
 
@@ -211,7 +224,21 @@ const showLoader = () => {
 
 const hideLoader = () => {
     document.querySelector('.loader').classList.remove('show');
-}
+};
+
+const showAlert = (message) => {
+    const wrapper = document.createElement('div');
+    wrapper.style.textAlign = 'center';
+
+
+    const alertEl = document.createElement('p');
+    alertEl.classList.add('alert');
+    alertEl.textContent = `Query Failed: ${message}`;
+
+    document.querySelector('.card').appendChild(wrapper);
+    wrapper.appendChild(alertEl);
+    setTimeout(() => wrapper.remove(), 4000);
+};
 
 
 //Event Listeners
