@@ -20,15 +20,16 @@ const searchResult = () => {
         const response = await fetch(`https://api.openweathermap.org/geo/1.0/direct?q=${query}&limit=5&appid=${key}`);
         const cities = await response.json();
         dropDownMenu(cities);
-    }, 300);
+    }, 200);
 };
 
 const dropDownMenu = (cities) => {
     dropdown.innerHTML = (cities.slice(0, 5).map((city) => 
-        `<div class="search-result">${city.name}, ${city.state}, ${city.country}</div>`
+        `<div class="search-result">${city.name}, ${city.state ? `${city.state},` : ''} ${city.country}</div>`
     ).join(''));
 
     dropdown.style.display = 'block';
+    dropdown.style.display = input.value.length === 0 ? 'none' : 'block';
 };
 
 dropdown.addEventListener('click', (e) => {
@@ -246,5 +247,12 @@ const showAlert = (message) => {
 document.addEventListener('DOMContentLoaded', fetchAPIData('Los Angeles,CA,US'));
 submitButton.addEventListener('click', () => fetchAPIData(document.getElementById('city').value));
 input.addEventListener('input', searchResult);
+input.addEventListener('click', (e) => { e.stopPropagation() });
+input.addEventListener('focus', () => {
+    if(input.value.length >=3) dropdown.style.display = 'block';
+});
+document.addEventListener('click', () => {
+    if (dropdown.style.display === 'block') (dropdown.style.display = 'none');
+});
 
 
